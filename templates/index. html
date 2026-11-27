@@ -1,1 +1,29 @@
-1
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnostic SportsAPI — Démonstration</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f4f6;color:#19384c;font-family:Arial,sans-serif}
+main{max-width:720px;margin:auto;padding:18px}.banner,.panel{background:white;border:1px solid #e4eaee;border-radius:10px;padding:15px;margin-bottom:14px}
+.banner{background:#fff2cf;color:#78581a;text-align:center;font-size:12px;font-weight:bold}
+h1{font-size:23px}p{color:#6e8795;font-size:14px;line-height:1.5}label{display:block;font-weight:bold;font-size:13px;margin:10px 0 6px}
+input{width:100%;padding:12px;border:1px solid #ccd8df;border-radius:8px;font-size:16px}
+button{margin-top:10px;padding:12px 16px;background:#4d91bd;color:white;border:0;border-radius:8px;font-weight:bold}
+pre{background:#142b3b;color:#e5f2f7;border-radius:8px;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:90px;font-size:12px}
+#status{font-size:13px;color:#6e8795}
+</style></head><body><main>
+<div class="banner">DÉMONSTRATION TECHNIQUE · DONNÉES NON CERTIFIÉES</div>
+<h1>Diagnostic SportsAPI Pro V2</h1>
+<p>Teste les routes connues et affiche les réponses brutes. Nous identifierons les champs réels avant de programmer l'affichage des logos.</p>
+<section class="panel"><h2>Recherche d'équipe</h2><label for="team">Nom de l'équipe</label>
+<input id="team" value="Arsenal"><button id="b1" onclick="searchTeam()">Tester /api/search</button></section>
+<section class="panel"><h2>Programme des matchs</h2><label for="date">Date</label>
+<input id="date" type="date"><button id="b2" onclick="schedule()">Tester /api/schedule</button></section>
+<section class="panel"><h2>Réponse reçue</h2><div id="status">En attente d'un test.</div><pre id="out">Le JSON apparaîtra ici.</pre>
+<p>La clé API reste sur le serveur Render et n'est jamais exposée dans cette page.</p></section>
+</main><script>
+const d=document.getElementById('date');const n=new Date();d.value=new Date(n-n.getTimezoneOffset()*60000).toISOString().slice(0,10);
+async function test(url,id){let b=document.getElementById(id),s=document.getElementById('status'),o=document.getElementById('out');b.disabled=true;s.textContent='Appel en cours…';o.textContent='Chargement…';
+try{let r=await fetch(url),t=await r.text(),j;try{j=JSON.parse(t)}catch{j={raw_response:t}}o.textContent=JSON.stringify(j,null,2);s.textContent='HTTP '+r.status+(r.ok?' · réponse reçue':' · erreur')}catch(e){s.textContent='Erreur de connexion';o.textContent=String(e)}finally{b.disabled=false}}
+function searchTeam(){let q=document.getElementById('team').value.trim();if(!q)return alert('Saisis une équipe.');test('/api/team-search?q='+encodeURIComponent(q),'b1')}
+function schedule(){let v=d.value;if(!v)return alert('Choisis une date.');test('/api/schedule/'+v,'b2')}
+</script></body></html>
