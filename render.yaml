@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: interface-pari-demo
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SPORTS_API_BASE_URL
+        value: https://v2.football.sportsapipro.com
+      - key: SPORTS_API_KEY
+        sync: false
+      - key: SPORTS_API_TIMEOUT
+        value: "20"
