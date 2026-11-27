@@ -60,3 +60,47 @@ def schedule(date_value):
 
 if __name__=="__main__":
     app.run(host="0.0.0.0",port=int(os.getenv("PORT","10000")))
+
+
+
+from flask import Response, jsonify
+import os
+import requests
+
+@app.route("/api/team-logo/<int:team_id>")
+def team_logo(team_id):
+    base_url = os.getenv(
+        "SPORTS_API_BASE_URL",
+        "https://v2.football.sportsapipro.com"
+    )
+    api_key = os.getenv("SPORTS_API_KEY")
+
+    if not api_key:
+        return jsonify({"error": "API key missing"}), 500
+
+    url = f"{base_url}/images/teams/{team_id}"
+
+    try:
+        response = requests.get(
+            url,
+            headers={"x-api-key": api_key},
+            timeout=20
+        )
+
+        if response.status_code != 200:
+            return jsonify({
+                "error": "Logo unavailable",
+                "upstream_status": response.status_code
+            }), response.status_code
+
+        return Response(
+            response.content,
+            content_type=response.headers.get(
+                "Content-Type", "image/png"
+            ),
+            headers={"Cache-Control": "public, max-age=86400"}
+        )
+
+    except requests.RequestException:
+        return jsonify({"error": "Image service unavailable
+    "}), 502
